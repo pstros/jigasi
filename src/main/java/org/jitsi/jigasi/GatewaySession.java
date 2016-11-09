@@ -84,6 +84,11 @@ public class GatewaySession
     private String destination;
 
     /**
+     * Contains the nickname of the dialed participant
+     */
+    private String nickname;
+
+    /**
      * The call resource assigned by {@link CallsControl} for the current call.
      */
     private String callResource;
@@ -155,6 +160,8 @@ public class GatewaySession
 
         callResource = null;
 
+        nickname = null;
+
         sipGateway.notifyCallEnded(resource);
     }
 
@@ -173,11 +180,13 @@ public class GatewaySession
      * @param jvbRoomName the name of MUC that holds JVB conference that will be
      *                    joined.
      * @param roomPass optional password required to enter MUC room.
+     * @param nickname optional nickname of the dialed participant
      * @param callResource the call resource that will identify new call.
      */
     public void createOutgoingCall(
         String destination, String jvbRoomName,
-        String roomPass,    String callResource)
+        String roomPass,    String nickname,
+        String callResource)
     {
         if (jvbConference != null)
         {
@@ -191,6 +200,7 @@ public class GatewaySession
 
         this.destination = destination;
         this.callResource = callResource;
+        this.nickname = nickname;
 
         jvbConference = new JvbConference(this, jvbRoomName, roomPass);
 
@@ -243,6 +253,15 @@ public class GatewaySession
     public String getDestination()
     {
         return destination;
+    }
+
+    /**
+     * Returns the nickname of the dialed participant.
+     * @return the nickname of the dialed participant.
+     */
+    public String getNickname()
+    {
+        return nickname;
     }
 
     /**

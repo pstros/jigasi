@@ -54,6 +54,14 @@ public class CallControlComponent
      */
     public static final String ROOM_NAME_HEADER = "JvbRoomName";
 
+
+    /** 
+     *  Name of 'header' attribute that holds the optional nickname of the dialed participant
+     *  if the header doesn't exist, fallback to the original behavior of displaying the SIP
+     *  uri prefix.
+     */
+    public static final String NICKNAME_HEADER = "Nickname";
+
     /**
      * Optional header for specifying password required to enter MUC room.
      */
@@ -186,11 +194,11 @@ public class CallControlComponent
      * @param to destination call address/URI.
      * @return the call resource string that will identify newly created call.
      */
-    String initNewCall(String roomName, String roomPass, String from, String to)
+    String initNewCall(String roomName, String roomPass, String from, String to, String nickname)
     {
         String callResource = generateNextCallResource();
 
-        gateway.createOutgoingCall(to, roomName, roomPass, callResource);
+        gateway.createOutgoingCall(to, roomName, roomPass, nickname, callResource);
 
         return callResource;
     }
@@ -252,12 +260,14 @@ public class CallControlComponent
                 if (roomName == null)
                     throw new RuntimeException("No JvbRoomName header found");
 
+		String nickname = dialIq.getHeader(NICKNAME_HEADER);
+
                 logger.info(
                     "Got dial request " + from + " -> " + to
                     + " room: " + roomName);
 
                 String callResource
-                    = initNewCall(roomName, roomPassword, from, to);
+                    = initNewCall(roomName, roomPassword, from, to, nickname);
 
                 callResource = "xmpp:" + callResource;
 

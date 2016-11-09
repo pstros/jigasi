@@ -52,6 +52,8 @@ public class CallsHandlingTest
 
     private String roomName;
 
+    private String nickname;
+
     private MockJvbConferenceFocus focus;
 
     /**
@@ -72,6 +74,7 @@ public class CallsHandlingTest
         sipProvider = osgi.getSipProvider();
 
         this.roomName = getTestRoomName();
+        this.nickname = getTestNickname();
 
         this.focus = new MockJvbConferenceFocus(roomName);
 
@@ -118,6 +121,11 @@ public class CallsHandlingTest
     private String getTestRoomName()
     {
         return "test" + roomNameCounter++;
+    }
+
+    private String getTestNickname()
+    {
+        return "testNickname" + roomNameCounter++;
     }
 
     /**
@@ -167,6 +175,8 @@ public class CallsHandlingTest
     {
         String destination = "sip-destination";
 
+	String nickname = getTestNickname();
+
         SipGateway sipGw = osgi.getSipGateway();
 
         focus.setup();
@@ -184,7 +194,7 @@ public class CallsHandlingTest
         outCallWatch.bind(sipTele);
 
         GatewaySession session =
-            sipGw.createOutgoingCall(destination, roomName, null,
+            sipGw.createOutgoingCall(destination, roomName, null, nickname,
                                      "callResourceUri" + roomName);
         assertNotNull(session);
 

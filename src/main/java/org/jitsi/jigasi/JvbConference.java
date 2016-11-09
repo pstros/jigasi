@@ -595,7 +595,12 @@ public class JvbConference
 
             mucRoom.addMemberPresenceListener(this);
 
-            String displayName = getSipUri();
+            String displayName = null;
+            if (gatewaySession.getNickname() != null)
+                displayName = gatewaySession.getNickname();
+            else
+                displayName = getSipUri();
+
             if (displayName != null)
             {
                 Nick nick = new Nick(displayName);

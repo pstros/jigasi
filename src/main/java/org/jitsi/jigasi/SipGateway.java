@@ -225,17 +225,18 @@ public class SipGateway
      * @param roomName the name of MUC that holds JVB conference that will be
      *                 joined.
      * @param roomPass optional password for joining protected MUC room.
+     * @param nickname optional nickname of the dialed participant 
      * @param callResource the call resource that will identify new call.
      */
     public GatewaySession createOutgoingCall(
-            String to, String roomName, String roomPass, String callResource)
+            String to, String roomName, String roomPass, String nickname, String callResource)
     {
         GatewaySession outgoingSession = new GatewaySession(this);
 
         sessions.put(callResource, outgoingSession);
 
         outgoingSession.createOutgoingCall(
-            to, roomName, roomPass, callResource);
+            to, roomName, roomPass, nickname, callResource);
 
         return outgoingSession;
     }
