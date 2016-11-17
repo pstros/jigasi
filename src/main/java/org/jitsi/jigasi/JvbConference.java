@@ -740,9 +740,17 @@ public class JvbConference
         if (ChatRoomMemberRole.OWNER.equals(member.getRole()) ||
             member.getContactAddress().equals(focusResourceAddr))
         {
-            logger.info("Focus left! - stopping");
-
-            stop();
+            if (JigasiBundleActivator.getConfigurationService()
+                    .getBoolean(
+                        SipGateway.P_NAME_KEEP_CALL_ON_OWNER_LEAVE, false))
+            {
+                logger.info("Focus left! - allowing call to continue");
+            }
+            else
+            {
+                logger.info("Focus left! - stopping");
+                stop();
+            }
         }
     }
 

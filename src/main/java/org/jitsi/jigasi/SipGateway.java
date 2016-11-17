@@ -56,7 +56,15 @@ public class SipGateway
      */
     public static final String P_NAME_DISABLE_ICE
         = "org.jitsi.jigasi.DISABLE_ICE";
-    
+
+    /**
+     * Name of the property used to disable hangup of call when moderator 
+     * leaves the room. This allows users to sit in conference on the phone
+     * while other users are joining the conference.
+     */
+    public static final String P_NAME_KEEP_CALL_ON_OWNER_LEAVE
+        = "org.jitsi.jigasi.KEEP_CALL_ON_OWNER_LEAVE";
+
     /**
      * Default JVB conference invite timeout.
      */
