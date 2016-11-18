@@ -737,8 +737,12 @@ public class JvbConference
             "Member left : " + member.getRole()
                 + " " + member.getContactAddress());
 
-        if (ChatRoomMemberRole.OWNER.equals(member.getRole()) ||
-            member.getContactAddress().equals(focusResourceAddr))
+        if(member.getContactAddress().equals(focusResourceAddr))
+        {
+            logger.info("Phone user kicked! - stopping call");
+            stop();
+        }
+        else if (ChatRoomMemberRole.OWNER.equals(member.getRole()))
         {
             if (JigasiBundleActivator.getConfigurationService()
                     .getBoolean(
