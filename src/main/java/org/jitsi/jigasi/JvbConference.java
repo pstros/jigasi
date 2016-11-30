@@ -737,12 +737,24 @@ public class JvbConference
             "Member left : " + member.getRole()
                 + " " + member.getContactAddress());
 
-        if (ChatRoomMemberRole.OWNER.equals(member.getRole()) ||
-            member.getContactAddress().equals(focusResourceAddr))
+        if(member.getContactAddress().equals(focusResourceAddr))
         {
-            logger.info("Focus left! - stopping");
-
+            logger.info("Phone user kicked! - stopping call");
             stop();
+        }
+        else if (ChatRoomMemberRole.OWNER.equals(member.getRole()))
+        {
+            if (JigasiBundleActivator.getConfigurationService()
+                    .getBoolean(
+                        SipGateway.P_NAME_KEEP_CALL_ON_OWNER_LEAVE, false))
+            {
+                logger.info("Focus left! - allowing call to continue");
+            }
+            else
+            {
+                logger.info("Focus left! - stopping");
+                stop();
+            }
         }
     }
 
