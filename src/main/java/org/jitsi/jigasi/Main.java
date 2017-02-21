@@ -118,9 +118,15 @@ public class Main
 
     /**
      * The name of the command-line argument which specifies sub-domain name for
-     * the videobridge component.
+     * the jigasi component.
      */
     private static final String SUBDOMAIN_ARG_NAME = "--subdomain";
+
+    /**
+     * The name of the command-line argument which specifies that connecting the
+     * component is disabled.
+     */
+    private static final String DISABLE_COMPONENT_ARG_NAME = "--nocomponent";
 
     /**
      * The name of the command-line argument which specifies log folder to use.
@@ -227,13 +233,20 @@ public class Main
             System.setProperty(PNAME_SC_CACHE_DIR_LOCATION, logdir);
         }
 
-        CallControlComponent sipGwComponent
+        final CallControlComponent sipGwComponent
             = new CallControlComponent(host, port, domain, subdomain, secret);
 
         ComponentMain main = new ComponentMain();
 
-        JigasiBundleConfig osgiBundles = new JigasiBundleConfig();
+        Util.domain = domain;
+        Util.subDomain = subdomain;
 
-        main.runMainProgramLoop(sipGwComponent, osgiBundles);
+        main.runMainProgramLoop(
+            Boolean.valueOf(
+                cmdLine.getOptionValue(DISABLE_COMPONENT_ARG_NAME)) ?
+                null :
+                new CallControlComponent(
+                    host, port, domain, subdomain, secret),
+            new JigasiBundleConfig());
     }
 }

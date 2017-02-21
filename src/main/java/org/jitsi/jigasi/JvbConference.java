@@ -316,8 +316,8 @@ public class JvbConference
 
         if (StringUtils.isNullOrEmpty(resourceIdentifier))
         {
-            resourceIdentifier = gatewaySession.getCallsControl()
-                .extractCallIdFromResource(gatewaySession.getCallResource());
+            resourceIdentifier = Util.extractCallIdFromResource(
+                gatewaySession.getCallResource());
         }
 
         return resourceIdentifier;
@@ -386,8 +386,10 @@ public class JvbConference
 
         this.xmppAccount
             = xmppProviderFactory.createAccount(
-                createAccountPropertiesForCallId(
-                    gatewaySession.getXmppServerName(), resourceIdentifier));
+                    createAccountPropertiesForCallId(
+                            Util.domain,
+                            resourceIdentifier,
+                            roomName));
 
         xmppProviderFactory.loadAccount(xmppAccount);
 
@@ -736,27 +738,38 @@ public class JvbConference
         logger.info(
             "Member left : " + member.getRole()
                 + " " + member.getContactAddress());
+        // 2 members, us and the focus
+        if (member.getContactAddress().equals(focusResourceAddr)
+            || evt.getChatRoom().getMembersCount() == 2)
+        {
+            logger.info(
+                member.getContactAddress().equals(focusResourceAddr) ?
+                    "Focus" : "Last participant"
+                + " left! - stopping");
 
-        if(member.getContactAddress().equals(focusResourceAddr))
-        {
-            logger.info("Phone user kicked! - stopping call");
-            stop();
-        }
-        else if (ChatRoomMemberRole.OWNER.equals(member.getRole()))
-        {
-            if (JigasiBundleActivator.getConfigurationService()
-                    .getBoolean(
-                        SipGateway.P_NAME_KEEP_CALL_ON_OWNER_LEAVE, false))
-            {
-                logger.info("Focus left! - allowing call to continue");
-            }
-            else
-            {
-                logger.info("Focus left! - stopping");
+        //if(member.getContactAddress().equals(focusResourceAddr))
+        //{
+            //logger.info("Phone user kicked! - stopping call");
+            //stop();
+        //}
+        //else if (ChatRoomMemberRole.OWNER.equals(member.getRole()))
+        //{
+            //if (JigasiBundleActivator.getConfigurationService()
+                    //.getBoolean(
+                        //SipGateway.P_NAME_KEEP_CALL_ON_OWNER_LEAVE, false))
+            //{
+                //logger.info("Focus left! - allowing call to continue");
+            //}
+            //else
+            //{
+                //logger.info("Focus left! - stopping");
+                //stop();
+            //}
+        //}
                 stop();
-            }
+            //}
         }
-    }
+}
 
     /**
      * Sends given <tt>extension</tt> in MUC presence update packet.
@@ -890,7 +903,8 @@ public class JvbConference
      */
     private Map<String, String> createAccountPropertiesForCallId(
             String domain,
-            String resourceName)
+            String resourceName,
+            String roomName)
     {
         HashMap<String, String> properties = new HashMap<String, String>();
 
@@ -973,6 +987,16 @@ public class JvbConference
                 // account and there we can alter the connection credentials.
 
                 this.xmppPassword = value;
+            }
+            else if ("org.jitsi.jigasi.xmpp.acc.BOSH_URL_PATTERN"
+                        .equals(overridenProp))
+            {
+                String boshUrl = value;
+                if (!StringUtils.isNullOrEmpty(boshUrl))
+                {
+                    boshUrl = boshUrl.replace("{roomName}", roomName);
+                    properties.put(JabberAccountID.BOSH_URL, boshUrl);
+                }
             }
             else
             {
